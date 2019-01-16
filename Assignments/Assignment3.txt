@@ -1,0 +1,59 @@
+Assignment #3Marc Tibbs (tibbsm@oregonstate.edu) 
+CS340-Spring 2018May 9, 2018
+
+1. Select the make_name and model_name of all vehicles, regardless of whether they are on the lot or not, which have a first production year of 1986.
+
+π make_name, model_name (
+	σ first_production_year = '1986' (
+		((Vehicle) ⨝ Vehicle.fk_model_id = Model.model_id (Model)) 
+				   ⨝ Vehicle.fk_make_id = Make.make_id (Make))
+)
+
+
+
+2. Select the make_name and model_name of all vehicles with the color name “Sky Blue”
+and which are on the lot.
+
+π make_name, model_name (
+	σ name = 'Sky Blue' (
+		((((Vehicle) ⨝ Vehicle.vehicle_id = Inventory.fk_vehicle_id (Inventory)) 
+					 ⨝ Inventory.fk_color_id = Color.color_id (Color))
+					 ⨝ Vehicle.fk_make_id = Make.make_id (Make))
+					 ⨝ Vehicle.fk_model_id = Model.model_id (Model))
+)
+
+
+
+
+3. Select the make_name, model_name and incentive amount for all vehicles on the lot with an incentive type “dealer”.
+
+π make_name, model_name (
+	σ type = 'dealer' (
+		(((((Vehicle) ⨝ Vehicle.vehicle_id = Inventory.fk_vehicle_id (Inventory)) 
+					  ⨝ Vehicle.vehicle_id = Vehicle_Incentive.fk_vehicle_id (Vehicle_Incentive))
+					  ⨝ Vehicle_Incentive.fk_incentive_id = Incentive.incentive_id (Incentive))
+					  ⨝ Vehicle.fk_make_id = Make.make_id (Make))
+					  ⨝ Vehicle.fk_model_id = Model.model_id (Model))
+)
+
+4. Convert the following query to relational algebra
+	SELECT Player.id, Team.name, City.name FROM Player
+	INNER JOIN Team ON Player.team_id = Team.id
+	INNER JOIN City ON Team.city_id = City.id
+	WHERE Player.score = 100;
+
+π Player.id, Team.name, City.name (
+	σ Player.score = 100 (
+		((Player) ⨝ Player.team_id = Team.id (Team)) 
+				  ⨝ Team.city_id = City.id (City))
+)
+
+
+5. For problem 3 above, convert your relational algebra query into a SQL query
+SELECT Make.make_name, Model.model_id FROM Vehicle
+INNER JOIN Inventory ON Vehicle.vehicle_id = Inventory.fk_vehicle_id
+INNER JOIN Vehicle_Incentive ON Vehicle.vehicle_id = Vehicle_Incentive.fk_vehicle_id
+INNER JOIN Incentive ON Vehicle_Incentive.fk_incentive_id = Incentive.incentive_id
+INNER JOIN Make ON Vehicle.fk_make_id = Make.make_id
+INNER JOIN Model ON Vehicle.fk_model_id = Model.model_id
+WHERE Incentive.type = 'dealer'
